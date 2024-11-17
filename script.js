@@ -1,16 +1,20 @@
-// Firebase Configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyBNMlCQQVsM7HVu0-PpqQIlT4y7fi3zZi0",
-  authDomain: "class-addmin.firebaseapp.com",
-  projectId: "class-addmin",
-  storageBucket: "class-addmin.firebasestorage.app",
-  messagingSenderId: "500990448706",
-  appId: "1:500990448706:web:e204a4aa3cecf1b4bb09db"
-};
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyB8-bOsX6lOglX5XfUvQJQsEwESGPoo3f4",
+    authDomain: "test-1-89304.firebaseapp.com",
+    projectId: "test-1-89304",
+    storageBucket: "test-1-89304.firebasestorage.app",
+    messagingSenderId: "369256468824",
+    appId: "1:369256468824:web:03559c06a86ce7e9e5152d"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
 
 // Handle Login
 if (document.getElementById("loginForm")) {
