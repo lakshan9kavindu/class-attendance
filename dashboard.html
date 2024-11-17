@@ -4,19 +4,51 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script type="module">
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8-bOsX6lOglX5XfUvQJQsEwESGPoo3f4",
+      authDomain: "test-1-89304.firebaseapp.com",
+      projectId: "test-1-89304",
+      storageBucket: "test-1-89304.firebasestorage.app",
+      messagingSenderId: "369256468824",
+      appId: "1:369256468824:web:03559c06a86ce7e9e5152d"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Protect Dashboard
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        alert("You are not logged in.");
+        window.location.href = "index.html";
+      }
+    });
+
+    // Logout Functionality
+    window.onload = () => {
+      const logoutButton = document.getElementById("logoutButton");
+      logoutButton.addEventListener("click", () => {
+        signOut(auth).then(() => {
+          window.location.href = "index.html";
+        });
+      });
+    };
+  </script>
 </head>
 <body class="flex items-center justify-center min-h-screen bg-gray-100">
   <div class="w-full max-w-lg p-6 bg-white rounded-lg shadow-md text-center">
     <h1 class="text-3xl font-bold mb-4">Welcome to Admin Dashboard</h1>
-    <p class="text-gray-600 mb-6">Only accessible to admins.</p>
+    <p class="text-gray-600 mb-6">Only accessible to authenticated users.</p>
     <button 
       id="logoutButton" 
       class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition">Logout</button>
   </div>
-  <script src="script.js"></script>
 </body>
 </html>
