@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register Student</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, uploadString } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
+
+    // Initialize Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8-bOsX6lOglX5XfUvQJQsEwESGPoo3f4",
+      authDomain: "test-1-89304.firebaseapp.com",
+      databaseURL: "https://test-1-89304-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "test-1-89304",
+      storageBucket: "test-1-89304.firebasestorage.app",
+      messagingSenderId: "369256468824",
+      appId: "1:369256468824:web:03559c06a86ce7e9e5152d"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    // Register Student
+    async function registerStudent(event) {
+      event.preventDefault();
+
+      const name = document.getElementById("name").value;
+      const nic = document.getElementById("nic").value;
+      const address = document.getElementById("address").value;
+      const phone = document.getElementById("phone").value;
+      const email = document.getElementById("email").value;
+      const school = document.getElementById("school").value;
+      const birthday = document.getElementById("birthday").value;
+      const photo = document.getElementById("photo").files[0];
+
+      // Unique student ID based on NIC
+      const studentId = nic;
+
+      try {
+        // Upload Photo to Firebase Storage
+        let photoUrl = "";
+        if (photo) {
+          const storageRef = ref(storage, `student_photos/${studentId}.jpg`);
+          await uploadBytes(storageRef, photo);
+          photoUrl = `https://firebasestorage.googleapis.com/v0/b/${firebaseConfig.storageBucket}/o/student_photos%2F${studentId}.jpg?alt=media`;
+        }
+
+        // Save to Firestore
+        await setDoc(doc(db, "students", studentId), {
+          name,
+          nic,
+          address,
+          phone,
+          email,
+          school,
+          birthday,
+          photoUrl,
+        });
+
+        alert("Student registered successfully!");
+
+        // Generate QR Code
+        const qrData = `StudentID: ${studentId}`;
+        const qrCodeCanvas = document.createElement("canvas");
+        new QRious({
+          element: qrCodeCanvas,
+          value: qrData,
+          size: 150,
+        });
+
+        // Save QR Code in Firebase Storage
+        const qrCodeImage = qrCodeCanvas.toDataURL("image/png");
+        const qrCodeRef = ref(storage, `qrcodes/${studentId}.png`);
+        await uploadString(qrCodeRef, qrCodeImage, "data_url");
+
+        alert("QR Code generated and uploaded!");
+      } catch (error) {
+        console.error("Error registering student:", error);
+        alert("Failed to register student.");
+      }
+    }
+  </script>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold text-center mb-6">Register Student</h1>
+    <form id="registerForm" class="space-y-4" onsubmit="registerStudent(event)">
+      <input id="name" type="text" placeholder="Name" class="w-full px-4 py-2 border rounded" required />
+      <input id="nic" type="text" placeholder="NIC" class="w-full px-4 py-2 border rounded" required />
+      <input id="address" type="text" placeholder="Address" class="w-full px-4 py-2 border rounded" required />
+      <input id="phone" type="text" placeholder="Phone Number" class="w-full px-4 py-2 border rounded" required />
+      <input id="email" type="email" placeholder="Email" class="w-full px-4 py-2 border rounded" required />
+      <input id="school" type="text" placeholder="School" class="w-full px-4 py-2 border rounded" required />
+      <input id="birthday" type="date" placeholder="Birthday" class="w-full px-4 py-2 border rounded" required />
+      <label for="photo" class="block text-gray-700">Upload Photo:</label>
+      <input id="photo" type="file" accept="image/*" class="w-full px-4 py-2 border rounded" required />
+      <button 
+        type="submit" 
+        class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition">
+        Register and Generate QR
+      </button>
+    </form>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+</body>
+</html>
